@@ -18,4 +18,87 @@
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
   </entry>
+  <entry>
+    <title></title>
+    <url>/2022/05/23/IoC/</url>
+    <content><![CDATA[<h1 id="Spring-boot-IoC-筆記"><a href="#Spring-boot-IoC-筆記" class="headerlink" title="Spring boot IoC 筆記"></a>Spring boot IoC 筆記</h1><ul>
+<li><h3 id="IoC-控制反轉"><a href="#IoC-控制反轉" class="headerlink" title="IoC 控制反轉"></a>IoC 控制反轉</h3><ul>
+<li>把Object交給Spring Container管理，把控制權交給外部的Spring容器，降低耦合度</li>
+<li>方便管理Object的生命週期</li>
+<li>方便測試</li>
+</ul>
+</li>
+<li><h3 id="Componet"><a href="#Componet" class="headerlink" title="@Componet"></a>@Componet</h3><ul>
+<li>只能用在class上</li>
+<li>將使用 <strong>@Componet</strong> 的 class 變成 <strong>交由Spring容器所管理的Object</strong></li>
+</ul>
+</li>
+<li><h3 id="Bean"><a href="#Bean" class="headerlink" title="Bean"></a>Bean</h3><ul>
+<li>這些由Spring所創建，並且存放在Spring容器裡的Object，我們會稱呼這些Object為 <strong>bean</strong></li>
+<li>bean的名字，就是由class的第一個字母轉小寫而來的 (<strong>class HpPrinter =&gt; bean hpPrinter</strong>)</li>
+</ul>
+</li>
+<li><h3 id="如何使用bean"><a href="#如何使用bean" class="headerlink" title="如何使用bean"></a>如何使用bean</h3><ul>
+<li>在要使用bean的class中，也加入 <strong>@Componet</strong> ，並且在要使用 <strong>DI</strong>的變數上方加上 <strong>@Autowired</strong></li>
+</ul>
+</li>
+<li><h3 id="IntelliJ-萬用鍵"><a href="#IntelliJ-萬用鍵" class="headerlink" title="IntelliJ 萬用鍵"></a>IntelliJ 萬用鍵</h3><ul>
+<li>遇到紅色波浪報錯時,可以使用alt + enter</li>
+</ul>
+</li>
+<li><h3 id="Autowired"><a href="#Autowired" class="headerlink" title="@Autowired"></a>@Autowired</h3><ul>
+<li>通常加在class裡面的變數上面</li>
+<li>根據 <strong>變數的類型</strong> ，Spring boot會幫我們在 Spring 容器裡面，找到相符合的 bean，然後將其注入到 @Autowired 的變數</li>
+<li>使用 @Autowired 的變數類型，最好是使用 Interface 比較好</li>
+</ul>
+</li>
+<li><h3 id="Qualifier"><a href="#Qualifier" class="headerlink" title="@Qualifier"></a>@Qualifier</h3><ul>
+<li>通常是加在class變數上，會跟 @Autowired一起用</li>
+<li>是用來指定 <strong>要載入bean的名字</strong> (範例是，有兩個class都實作了 Printer 這個 Interface ，然後要注入的變數型別是 Printer ，所以要決定注入哪一個class的bean)</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Componet</span></span><br><span class="line">Public <span class="class"><span class="keyword">class</span> <span class="title">Teacher</span></span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qulifier(&quot;hpPrinter&quot;)</span></span><br><span class="line">    Private Printer printer;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">teach</span><span class="params">()</span></span>&#123;</span><br><span class="line">        printer.print(<span class="string">&quot;I&#x27;m a teacher&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><h3 id="創建Bean的方法"><a href="#創建Bean的方法" class="headerlink" title="創建Bean的方法"></a>創建Bean的方法</h3><ul>
+<li>在class上加上 <strong>@Component</strong> 註解</li>
+<li>使用 <strong>@Configuration</strong> + <strong>@Bean</strong> 註解</li>
+</ul>
+</li>
+<li><h3 id="Configuration"><a href="#Configuration" class="headerlink" title="@Configuration"></a>@Configuration</h3><ul>
+<li>只能加在class上</li>
+<li>Spring 中的 <strong>設定用註解</strong> ，表示這個class是用來設定Spring用的</li>
+</ul>
+</li>
+<li><h3 id="Bean-1"><a href="#Bean-1" class="headerlink" title="@Bean"></a>@Bean</h3><ul>
+<li>只能加在 <strong>帶有@Configuration的class，的方法上</strong></li>
+<li>用途是，在Spring容器中創建一個Bean</li>
+<li>透過 @Bean 所創建的Bean，就是方法的返回值(就是下面的程式碼中，返回的HpPrinter物件，而名字則是方法的名字myPrinter)</li>
+<li>如果 寫成 <strong>@Bean(“xxx”)</strong> 的話，那bean的名字就會優先使用xxx而不是方法名 myPrinter<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyConfiguration</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Printer <span class="title">myPrinter</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HpPrinter();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><h3 id="Spring中，初始化bean的方法"><a href="#Spring中，初始化bean的方法" class="headerlink" title="Spring中，初始化bean的方法"></a>Spring中，初始化bean的方法</h3><ul>
+<li>使用 <strong>@PostConstruct註解</strong> (較常用)</li>
+<li>實現 InitializinBean interface 的 afterPropertiesSet()方法</li>
+</ul>
+</li>
+<li><h3 id="PostConstruct"><a href="#PostConstruct" class="headerlink" title="@PostConstruct"></a>@PostConstruct</h3><ul>
+<li>用途是初始化 bean</li>
+<li>加上@PostConstruct的方法， <strong>一定要是public</strong> ，且返回值<strong>一定要是void</strong> ，<strong>方法也不能有參數</strong><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostConstruct</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">()</span></span>&#123;</span><br><span class="line">    count = <span class="number">5</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><h3 id="Spring-Boot-設定檔-application-properties"><a href="#Spring-Boot-設定檔-application-properties" class="headerlink" title="Spring Boot 設定檔-application.properties"></a>Spring Boot 設定檔-application.properties</h3><ul>
+<li>用法: 使用properties語法(key = value)</li>
+<li>用途: 存放Spring Boot 的設定值</li>
+</ul>
+</li>
+<li><h3 id="Value"><a href="#Value" class="headerlink" title="@Value"></a>@Value</h3><ul>
+<li>用法:加在<strong>Bean</strong> 或是 <strong>設定Spring用的class裡面的變數上</strong></li>
+<li>用途:讀取Spring Boot 設定檔(application.properties)中，指定的key的值</li>
+<li>@Value可以設定預設值，寫法是 <strong>@Value(“${my.name:John}”)</strong> ，這樣如果在Spring設定檔中找不到key，就會帶入預設值John</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBean</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;my.name&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
 </search>
